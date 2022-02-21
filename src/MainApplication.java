@@ -1,14 +1,11 @@
 import dto.Usuario;
 
-import java.util.Scanner;
-
-public class verificaSenha {
+public class MainApplication {
 
   public static void main(String[] args) {
 
     Usuario usuario = new Usuario();
-
     usuario.cadastraUsuario();
-
+    System.out.println(usuario.cadastraUsuario());
   }
 }

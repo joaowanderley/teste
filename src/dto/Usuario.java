@@ -1,49 +1,98 @@
 package dto;
 
 import java.util.Scanner;
+import java.util.logging.Logger;
 
 public class Usuario {
+  private boolean senhaValida = false;
   model.Usuario usuario = new model.Usuario();
-  public void cadastraUsuario() {
-    boolean senhainValida = true;
-    String nome, senha;
-    String regex = "(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[-+()_!@#$%^&*.,?]).{6,}+$";
 
+  public model.Usuario cadastraUsuario() {
     do {
       Scanner scNome = new Scanner(System.in);
       Scanner scSenha = new Scanner(System.in);
 
       System.out.print("Digite seu nome: ");
-      nome = scNome.next();
+      usuario.setNome(scNome.next());
 
       System.out.print("Digite sua senha: ");
-      senha = scSenha.next();
+      usuario.setSenha(scSenha.next());
 
+      validarSenha();
+      return usuario;
+    } while (senhaValida);
+  }
 
-      if (senha.matches(regex)) {
-        usuario.setNome(nome);
-        usuario.setSenha(senha);
-        System.out.println("Usuario cadastrado: " +usuario);
-        senhainValida = false;
-      } else {
-        System.out.println("A senha precisa ter 6 caracteres com no minimo: \n" +
-            "1 letra maiscula, \n" +
-            "1 letra minuscula, \n" +
-            "1 numero \n" +
-            "1 caractere especial\n" +
-            "Tente Novamente!");
-        senhainValida = true;
-      }
+  private void validarSenha() {
+    try {
       verificaTamanhoSenha();
-    } while (senhainValida);
+      verificaSeTemNumero();
+      verificaSeTemLetraMinuscula();
+      verificaSeTemLetraMaiuscula();
+      verificaSeTemCaractereEspecial();
+      senhaValida = true;
+    } catch (Exception e) {
+      senhaValida = false;
+    }
   }
 
   private void verificaTamanhoSenha() {
-    char[] myChars = usuario.getSenha().toCharArray();
-    for (int i=0; i<myChars.length; i++){
-      if(myChars.length > 5){
-        System.out.println("Senha maior que 5 caracteres");
+    String senha = usuario.getSenha();
+    if (senha.length() < 5) {
+      System.out.println("A senha precisa ser maior do que 6 caracteres");
+    }
+  }
+
+  private boolean verificaSeTemLetraMaiuscula() {
+    boolean caracterMaisculo;
+    char[] caracteres = usuario.getSenha().toCharArray();
+    for (int i = 0; i < caracteres.length; i++) {
+      caracterMaisculo = Character.isUpperCase(caracteres[i]);
+      if (caracterMaisculo) {
+        return true;
       }
     }
+    System.out.println("A senha precisa ter no mínimo uma letra maiúscula");
+    return false;
+  }
+
+  private boolean verificaSeTemNumero() {
+    boolean caracterNumerico;
+    char[] caracteres = usuario.getSenha().toCharArray();
+    for (int i = 0; i < caracteres.length; i++) {
+      caracterNumerico = Character.isDigit(caracteres[i]);
+      if (caracterNumerico) {
+        return true;
+      }
+    }
+    System.out.println("A senha precisa ter no mínimo um numero");
+    return false;
+  }
+
+  private boolean verificaSeTemLetraMinuscula() {
+    boolean caracterMinusculo;
+    char[] caracteres = usuario.getSenha().toCharArray();
+    for (int i = 0; i < caracteres.length; i++) {
+      caracterMinusculo = Character.isLowerCase(caracteres[i]);
+      if (caracterMinusculo) {
+        return true;
+      }
+    }
+    System.out.println("A senha precisa ter no minimo uma letra minuscula");
+    return false;
+  }
+
+  private boolean verificaSeTemCaractereEspecial() {
+    char[] caracteresEspeciais = {'!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '+'};
+    char[] caracteres = usuario.getSenha().toCharArray();
+    for (int i = 0; i < caracteres.length; i++) {
+      for (int j = 0; j < caracteresEspeciais.length; j++) {
+        if (caracteres[i] == caracteresEspeciais[j]) {
+          return true;
+        }
+      }
+    }
+    System.out.println("A senha precisa ter no minimo um caractere especial");
+    return false;
   }
 }
